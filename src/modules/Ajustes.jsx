@@ -10,6 +10,7 @@ import {
 } from '../lib/anthropic'
 import { getConfig, setConfig, exportarTodo, borrarTodo } from '../lib/db'
 import { getTtsConfig, setTtsConfig } from '../lib/tts'
+import { pushDisponible, suscribirPush, desuscribirPush } from '../lib/push'
 import { vocesDisponibles } from '../lib/util'
 import Aviso from '../components/Aviso'
 
@@ -22,6 +23,7 @@ export default function Ajustes({ onCerrar, onPerfil }) {
   const [tts, setTts] = useState({ endpoint: '', apiKey: '', voz: '' })
   const [recOn, setRecOn] = useState(false)
   const [recHora, setRecHora] = useState('09:00')
+  const [recModo, setRecModo] = useState('') // 'fondo' | 'local' | ''
   const [guardado, setGuardado] = useState(false)
 
   useEffect(() => {
@@ -50,19 +52,42 @@ export default function Ajustes({ onCerrar, onPerfil }) {
     await setConfig('vozPreferida', voz)
     await setConfig('recordatorioOn', recOn)
     await setConfig('recordatorioHora', recHora)
+    // Si el push de fondo está activo, actualiza la hora en el servidor.
+    if (recOn && recModo === 'fondo') await suscribirPush(recHora)
     setGuardado(true)
     setTimeout(() => setGuardado(false), 1800)
   }
 
   async function alternarRecordatorio(v) {
-    if (v && typeof Notification !== 'undefined' && Notification.permission !== 'granted') {
+    if (!v) {
+      setRecOn(false)
+      setRecModo('')
+      await desuscribirPush()
+      return
+    }
+    // 1) Intenta push de fondo (funciona con la app cerrada) si está configurado.
+    if (pushDisponible()) {
+      const r = await suscribirPush(recHora)
+      if (r.ok) {
+        setRecOn(true)
+        setRecModo('fondo')
+        return
+      }
+      if (r.motivo === 'sin-permiso') {
+        setRecOn(false)
+        return
+      }
+    }
+    // 2) Respaldo: recordatorio local (solo con la app abierta).
+    if (typeof Notification !== 'undefined' && Notification.permission !== 'granted') {
       const permiso = await Notification.requestPermission()
       if (permiso !== 'granted') {
         setRecOn(false)
         return
       }
     }
-    setRecOn(v)
+    setRecOn(true)
+    setRecModo('local')
   }
 
   async function exportar() {
@@ -222,15 +247,22 @@ export default function Ajustes({ onCerrar, onPerfil }) {
               Activar recordatorio
             </label>
             {recOn && (
-              <label className="block text-sm">
-                <span className="text-jade font-medium">Hora</span>
-                <input
-                  type="time"
-                  value={recHora}
-                  onChange={(e) => setRecHora(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-salvia/30 bg-white/70 px-3 py-2 text-jade"
-                />
-              </label>
+              <>
+                <label className="block text-sm">
+                  <span className="text-jade font-medium">Hora</span>
+                  <input
+                    type="time"
+                    value={recHora}
+                    onChange={(e) => setRecHora(e.target.value)}
+                    className="mt-1 w-full rounded-xl border border-salvia/30 bg-white/70 px-3 py-2 text-jade"
+                  />
+                </label>
+                <p className="text-xs text-salvia">
+                  {recModo === 'fondo'
+                    ? 'Recordatorio activo aunque cierres la app.'
+                    : 'Recordatorio activo mientras la app esté abierta. (El aviso con la app cerrada requiere configurar Web Push en el servidor.)'}
+                </p>
+              </>
             )}
           </section>
 

@@ -214,6 +214,23 @@ El repo trae funciones serverless en `api/` para no exponer ninguna clave en el 
 Con esta configuración, los campos de clave en *Ajustes* quedan opcionales (puedes dejarlos vacíos).
 Ver todas las variables en [`.env.example`](./.env.example).
 
+### Recordatorios con la app cerrada (Web Push) — opcional
+
+Sin esto, el recordatorio funciona **mientras la app está abierta** (no requiere nada). Para que
+llegue **con la app cerrada**:
+
+1. Genera las claves VAPID: `node scripts/generar-vapid.mjs`.
+2. Agrega en Vercel: `VITE_VAPID_PUBLIC_KEY` y `VAPID_PUBLIC_KEY` (la pública), `VAPID_PRIVATE_KEY`
+   (la privada) y `VAPID_SUBJECT` (mailto). 
+3. Provisiona un **KV** (Vercel Marketplace → Upstash Redis) y deja que añada
+   `KV_REST_API_URL` / `KV_REST_API_TOKEN`. Ahí se guardan las suscripciones.
+4. El **cron** ya está en `vercel.json` (`/api/cron/reminders`, cada hora): envía el aviso a cada
+   persona a su hora local, una vez al día. *(La frecuencia horaria puede requerir plan Pro; en
+   Hobby los crons son diarios.)*
+
+Si falta cualquiera de estas piezas, la app cae automáticamente al recordatorio local. El usuario
+solo ve "Activar recordatorio" + hora; la complejidad queda del lado del servidor.
+
 ## Privacidad
 
 - Todo (diario, autorreportes, memoria del explorador, ajustes, audios) vive en **IndexedDB**, en tu

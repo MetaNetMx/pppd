@@ -35,6 +35,8 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2,mp3,m4a}'],
+        // Inyecta los manejadores de Web Push en el service worker generado.
+        importScripts: ['push-sw.js'],
         // No cachear llamadas a la API de Anthropic.
         navigateFallbackDenylist: [/^\/api/],
         runtimeCaching: [

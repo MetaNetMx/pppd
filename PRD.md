@@ -110,9 +110,10 @@ paleta natural. Voz: directa, sin prisa, sin autoayuda masiva.
   (config técnica bajo "Avanzado"); **práctica de exposición visual** con 4 niveles, patrones
   optocinéticos (puntos/barras/tablero/ondas), valoración de tolerancia antes/después y progresión.
 - **Hecho (cont.):** gestión de audios humanos (varios por meditación, Blob en IndexedDB, elegir
-  activo/renombrar/borrar); botón "Deploy to Vercel" de un clic.
-- **Siguiente:** Web Push para recordatorios con app cerrada; sincronización cifrada opcional;
-  validación del NPQ-es.
+  activo/renombrar/borrar); botón "Deploy to Vercel" de un clic; **Web Push** para recordatorios con
+  la app cerrada (VAPID + service worker + KV + cron horario), con caída a recordatorio local.
+- **Siguiente:** sincronización cifrada opcional; validación del NPQ-es; biblioteca compartida de
+  audios humanos.
 
 ## 13. Riesgos y mitigaciones
 

@@ -51,6 +51,9 @@ vercel.json                  Config de despliegue (framework vite + funciones ap
 api/
   chat.js                    Función serverless → Anthropic (clave server-side).
   tts.js                     Función serverless → TTS (Azure es-MX | ElevenLabs | OpenAI).
+  _kv.js                     KV mínimo sobre Upstash/Vercel KV (REST). no-op si no hay credenciales.
+  push/subscribe.js          Registra/elimina suscripción Web Push en KV.
+  cron/reminders.js          Cron horario: envía el recordatorio diario (web-push) a cada usuario.
 scripts/generar-iconos.mjs   Generador de iconos PNG (sin deps).
 src/
   App.jsx                    Shell, navegación por tabs, recordatorio, monta ErrorBoundary.
@@ -95,6 +98,9 @@ src/
   grabadas, sin muros de configuración).
 - **Ajustes simples:** lo técnico (API/proxy/TTS neuronal) vive bajo un `<details>` "Avanzado"; el
   usuario normal solo ve voz, recordatorio y datos.
+- **Recordatorio:** al activarlo intenta Web Push de fondo (`src/lib/push.js` + `public/push-sw.js` +
+  `api/push` + `api/cron/reminders.js` + KV); si no está configurado, cae al recordatorio local
+  (notificación al abrir la app, en `App.jsx`). El usuario no ve esa complejidad.
 - **Voz:** `src/lib/tts.js` `crearLocutor()` usa endpoint neuronal (`/api/tts` o configurado) y, si
   falla o no existe, cae a `speechSynthesis`. Respeta las pausas de cada segmento.
 - **Ruta adaptativa:** `content/ruta.js` `decidirNivel(estado, nivelPrevio)` → nivel 1–3.
