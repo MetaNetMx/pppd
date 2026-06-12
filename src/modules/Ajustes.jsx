@@ -95,6 +95,17 @@ export default function Ajustes({ onCerrar, onPerfil }) {
             </button>
           </div>
 
+          {/* Avanzado: conexión IA y voz neuronal. Oculto por defecto para mantener la simplicidad. */}
+          <details className="rounded-2xl bg-salvia/10 p-3">
+          <summary className="text-sm font-semibold text-pino cursor-pointer">
+            Avanzado (conexión con IA y voz neuronal)
+          </summary>
+          <p className="text-xs text-salvia mt-2">
+            La app funciona sin esto: el Explorador tiene un modo guiado y las meditaciones usan la
+            voz del navegador. Configura aquí solo si quieres respuestas de IA y voz neuronal.
+          </p>
+          <div className="space-y-6 mt-4">
+
           {/* Conexión IA */}
           <section className="space-y-3">
             <h3 className="font-semibold text-pino">Conexión con la IA (Explorador)</h3>
@@ -171,10 +182,12 @@ export default function Ajustes({ onCerrar, onPerfil }) {
               </label>
             </div>
           </section>
+          </div>
+          </details>
 
           {/* Voz del navegador (respaldo) */}
           <section className="space-y-2">
-            <h3 className="font-semibold text-pino">Voz del navegador (respaldo)</h3>
+            <h3 className="font-semibold text-pino">Voz de las meditaciones</h3>
             <p className="text-xs text-salvia">
               Se usa si no configuras voz neuronal. Lo ideal es subir tus propios audios en cada
               meditación.

@@ -6,6 +6,11 @@ PWA instalable de **apoyo y autocuidado** para el **mareo postural-perceptual pe
 en español de México. Combina psicoeducación, una ruta diaria adaptativa de reentrenamiento,
 meditaciones guiadas, un explorador conversacional informado por TCC, y seguimiento de síntomas.
 
+✅ **Funciona para cualquiera sin configurar nada.** Al abrirla, todos los módulos funcionan en
+local: psicoeducación, ruta diaria, meditaciones (con voz del navegador o leyendo el guion),
+explorador (modo guiado offline), seguimiento, evidencia y crisis. Conectar la IA y la voz neuronal
+es **opcional** y solo enriquece el explorador y las meditaciones a la medida.
+
 ⚠️ **No es tratamiento médico.** Es un complemento de la atención profesional. No diagnostica, no
 prescribe y no sustituye a tu médico ni a un especialista vestibular. La base clínica está en
 [`evidencia.md`](./evidencia.md), con cada técnica etiquetada `[VALIDADO]`, `[ADYUVANTE]` o
@@ -20,7 +25,7 @@ prescribe y no sustituye a tu médico ni a un especialista vestibular. La base c
 | **1. Onboarding / psicoeducación** | Explica el PPPD en lenguaje sencillo (dependencia visual, hipervigilancia). Mensaje central: síntomas reales pero no peligrosos; el patrón se reentrena. |
 | **2. Ruta de alivio diaria** | Secuencia < 10 min: respiración, estabilización de la mirada, exposición visual graduada, aceptación y un reto conductual. **Adaptativa**: baja en días malos, sube tras avances, sin culpa. |
 | **3. Meditaciones** | 6 guiones con reproductor: voz humana (subes tus audios) + voz sintética (TTS) de respaldo. Además, **"Meditación a la medida"**: genera con la IA una meditación personalizada según cómo te sientes en el momento (mismas reglas de seguridad; deriva ante crisis). |
-| **4. Explorador del detonante** | Diálogo guiado con la API de Anthropic, una pregunta a la vez, informado por TCC. Guarda hallazgos en memoria local. |
+| **4. Explorador del detonante** | Diálogo guiado, una pregunta a la vez, informado por TCC. **Funciona sin configurar nada** (modo guiado offline); si conectas la IA, la conversación se vuelve más libre y adaptativa. Guarda hallazgos en memoria local. |
 | **5. Seguimiento** | Diario de síntomas + autorreporte DHI/NPQ simplificado + gráficas de evolución. |
 | **6. Panel de evidencia** | Cada técnica con su nivel de evidencia y un "por qué" en una frase. |
 

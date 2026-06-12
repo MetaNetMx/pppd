@@ -17,6 +17,12 @@ import Aviso from '../components/Aviso'
 export default function Meditaciones() {
   const [sel, setSel] = useState(null)
   const [generando, setGenerando] = useState(false)
+  const [conIA, setConIA] = useState(false)
+
+  useEffect(() => {
+    hayConexion().then(setConIA)
+  }, [])
+
   if (sel) return <Reproductor med={sel} onVolver={() => setSel(null)} />
   if (generando)
     return <GeneradorMeditacion onListo={setSel} onVolver={() => setGenerando(false)} />
@@ -31,23 +37,26 @@ export default function Meditaciones() {
         </p>
       </div>
 
-      {/* Meditación a la medida (generada con la IA según cómo te sientes) */}
-      <button
-        onClick={() => setGenerando(true)}
-        className="w-full rounded-3xl bg-gradient-to-br from-pino to-bosque text-arena p-5 text-left shadow-suave hover:from-bosque hover:to-bosque transition"
-      >
-        <div className="flex items-center gap-3">
-          <span className="text-3xl">✺</span>
-          <div>
-            <h2 className="text-xl font-serif text-arena">Meditación a la medida</h2>
-            <p className="text-arena/80 text-sm">
-              Creada para ti según cómo te sientes ahora mismo.
-            </p>
-          </div>
-        </div>
-      </button>
-
-      <p className="text-xs text-salvia px-1">o elige una de las grabadas:</p>
+      {/* Meditación a la medida: solo si hay IA conectada (si no, no mostramos muros de config) */}
+      {conIA && (
+        <>
+          <button
+            onClick={() => setGenerando(true)}
+            className="w-full rounded-3xl bg-gradient-to-br from-pino to-bosque text-arena p-5 text-left shadow-suave hover:from-bosque hover:to-bosque transition"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-3xl">✺</span>
+              <div>
+                <h2 className="text-xl font-serif text-arena">Meditación a la medida</h2>
+                <p className="text-arena/80 text-sm">
+                  Creada para ti según cómo te sientes ahora mismo.
+                </p>
+              </div>
+            </div>
+          </button>
+          <p className="text-xs text-salvia px-1">o elige una de las grabadas:</p>
+        </>
+      )}
 
       <div className="grid gap-3">
         {MEDITACIONES.map((m) => {

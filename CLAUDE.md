@@ -84,8 +84,14 @@ src/
 ## Cómo fluye lo importante
 
 - **Datos:** todo en IndexedDB vía `src/lib/db.js`. No hay backend de datos. Exportar/borrar en Ajustes.
-- **IA (Explorador y meditación a la medida):** `src/lib/anthropic.js` → proxy `VITE_API_PROXY_URL`
-  (recomendado, p. ej. `/api/chat`) o clave en IndexedDB. Respuestas en **JSON** parseado por el módulo.
+- **Explorador:** funciona SIEMPRE. Si hay IA conectada usa el chat con Anthropic
+  (`src/lib/anthropic.js`, respuestas JSON); si no, usa el **modo guiado offline**
+  (`src/content/exploradorOffline.js`): flujo TCC scripteado, una pregunta a la vez, con detección
+  de crisis. La app es plenamente funcional sin configurar nada.
+- **Meditación a la medida:** solo se muestra si hay IA conectada (si no, el usuario ve las 6
+  grabadas, sin muros de configuración).
+- **Ajustes simples:** lo técnico (API/proxy/TTS neuronal) vive bajo un `<details>` "Avanzado"; el
+  usuario normal solo ve voz, recordatorio y datos.
 - **Voz:** `src/lib/tts.js` `crearLocutor()` usa endpoint neuronal (`/api/tts` o configurado) y, si
   falla o no existe, cae a `speechSynthesis`. Respeta las pausas de cada segmento.
 - **Ruta adaptativa:** `content/ruta.js` `decidirNivel(estado, nivelPrevio)` → nivel 1–3.
