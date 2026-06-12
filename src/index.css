@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-arena text-jade font-sans antialiased;
+    margin: 0;
+    /* Respeta áreas seguras en móviles instalados como PWA */
+    padding: env(safe-area-inset-top) env(safe-area-inset-right)
+      env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+  h1, h2, h3 {
+    @apply font-serif text-pino;
+    font-weight: 500;
+  }
+  /* Tipografía cómoda para lectura larga y baja activación visual */
+  p {
+    line-height: 1.7;
+  }
+  ::selection {
+    background: #8a9e9a55;
+  }
+}
+
+@layer components {
+  .tarjeta {
+    @apply bg-white/70 backdrop-blur rounded-3xl shadow-suave border border-salvia/20;
+  }
+  .boton {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3
+      font-sans font-bold text-base transition active:scale-[0.98]
+      focus:outline-none focus-visible:ring-2 focus-visible:ring-jade/50;
+  }
+  .boton-primario {
+    @apply boton bg-pino text-arena hover:bg-bosque;
+  }
+  .boton-suave {
+    @apply boton bg-salvia/25 text-pino hover:bg-salvia/40;
+  }
+  .boton-fantasma {
+    @apply boton bg-transparent text-jade hover:bg-salvia/15;
+  }
+  .etiqueta {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold tracking-wide;
+  }
+}
+
+/* Movimiento muy lento para las escenas de naturaleza */
+@keyframes drift {
+  from { transform: translateX(-12px); }
+  to { transform: translateX(12px); }
+}
+@keyframes sway {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 0.4; }
+}
+.drift-slow { animation: drift 14s ease-in-out infinite alternate; }
+.sway { animation: sway 9s ease-in-out infinite; }
+.twinkle { animation: twinkle 6s ease-in-out infinite; }
+/* Fondos de navegación sin movimiento (seguro para PPPD) */
+.escena-estatica .drift-slow,
+.escena-estatica .sway,
+.escena-estatica .twinkle { animation: none !important; }
+
+/* Reduce el movimiento para usuarios sensibles (importante en PPPD) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
