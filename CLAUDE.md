@@ -55,7 +55,8 @@ scripts/generar-iconos.mjs   Generador de iconos PNG (sin deps).
 src/
   App.jsx                    Shell, navegación por tabs, recordatorio, monta ErrorBoundary.
   lib/
-    db.js                    IndexedDB: perfil, diario, autoreportes, rutas, hallazgos, config.
+    db.js                    IndexedDB (v2): perfil, diario, autoreportes, rutas, hallazgos,
+                             config, audios (Blobs de voz humana por meditación).
     anthropic.js             Cliente chat (proxy o clave local; header de navegador directo).
     tts.js                   crearLocutor(): reproduce segmentos con TTS neuronal o navegador.
     evidencia.js             Registro de técnicas + niveles. ÚNICA fuente de etiquetas en la app.

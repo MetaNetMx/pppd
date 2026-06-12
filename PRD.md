@@ -109,8 +109,10 @@ paleta natural. Voz: directa, sin prisa, sin autoayuda masiva.
 - **Hecho (cont.):** modo guiado offline del Explorador (funciona sin IA); UI simplificada
   (config técnica bajo "Avanzado"); **práctica de exposición visual** con 4 niveles, patrones
   optocinéticos (puntos/barras/tablero/ondas), valoración de tolerancia antes/después y progresión.
+- **Hecho (cont.):** gestión de audios humanos (varios por meditación, Blob en IndexedDB, elegir
+  activo/renombrar/borrar); botón "Deploy to Vercel" de un clic.
 - **Siguiente:** Web Push para recordatorios con app cerrada; sincronización cifrada opcional;
-  validación del NPQ-es; biblioteca de audios humanos.
+  validación del NPQ-es.
 
 ## 13. Riesgos y mitigaciones
 

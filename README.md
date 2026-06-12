@@ -190,6 +190,12 @@ lento y se detiene con `prefers-reduced-motion` (importante en PPPD). Código en
 
 ## Desplegar en Vercel (proxy de API + TTS incluido)
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FMetaNetMx%2Fpppd)
+
+Un clic en el botón clona el repo y lo despliega. La app queda funcional para cualquiera de
+inmediato (no necesita claves). Para encender la IA y la voz neuronal, agrega luego las variables de
+entorno (abajo).
+
 El repo trae funciones serverless en `api/` para no exponer ninguna clave en el navegador:
 `api/chat.js` (Anthropic) y `api/tts.js` (TTS neuronal, soporta **Azure es-MX**, ElevenLabs y OpenAI).
 

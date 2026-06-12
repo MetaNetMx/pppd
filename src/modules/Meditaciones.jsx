@@ -1,7 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import { MEDITACIONES } from '../content/meditaciones'
 import { tecnica } from '../lib/evidencia'
-import { getConfig, setConfig, getHallazgos } from '../lib/db'
+import {
+  getConfig,
+  setConfig,
+  getHallazgos,
+  addAudio,
+  getAudios,
+  renameAudio,
+  deleteAudio,
+} from '../lib/db'
 import { elegirVoz } from '../lib/util'
 import { crearLocutor, ttsNeuronalActivo } from '../lib/tts'
 import NaturalezaScene, { escenaPorPaisaje } from '../components/NaturalezaScene'
@@ -243,9 +251,11 @@ function Reproductor({ med, onVolver }) {
   const [voz, setVoz] = useState(null)
   const [vozPref, setVozPref] = useState('')
   const [neural, setNeural] = useState(false)
-  const [audioUrl, setAudioUrl] = useState(med.audioUrl)
-  const audioRef = useRef(null)
+  const [audios, setAudios] = useState([]) // {id, nombre, url}
+  const [activoId, setActivoId] = useState(null)
   const locutor = useRef(null)
+  const urlsRef = useRef([])
+  const esGenerada = String(med.id).startsWith('amedida-')
   const escena = med.escena || escenaPorPaisaje(med.paisaje)
 
   if (!locutor.current) locutor.current = crearLocutor()
@@ -261,13 +271,29 @@ function Reproductor({ med, onVolver }) {
     cargar()
     ttsNeuronalActivo().then(setNeural)
     window.speechSynthesis?.addEventListener?.('voiceschanged', cargar)
-    getConfig(`audio:${med.id}`).then((u) => u && setAudioUrl(u))
+    cargarAudios()
     const loc = locutor.current
     return () => {
       loc?.detener()
       window.speechSynthesis?.removeEventListener?.('voiceschanged', cargar)
+      urlsRef.current.forEach((u) => URL.revokeObjectURL(u))
+      urlsRef.current = []
     }
   }, [med.id])
+
+  async function cargarAudios() {
+    urlsRef.current.forEach((u) => URL.revokeObjectURL(u))
+    urlsRef.current = []
+    const lista = await getAudios(med.id)
+    const conUrl = lista.map((a) => {
+      const url = URL.createObjectURL(a.blob)
+      urlsRef.current.push(url)
+      return { id: a.id, nombre: a.nombre, url }
+    })
+    setAudios(conUrl)
+    const guardado = await getConfig(`audioActivo:${med.id}`, null)
+    setActivoId(guardado ?? conUrl[0]?.id ?? null)
+  }
 
   const segmentos = med.segmentos
   const puedeReproducir = neural || Boolean(voz)
@@ -296,14 +322,35 @@ function Reproductor({ med, onVolver }) {
   async function subirAudio(e) {
     const file = e.target.files?.[0]
     if (!file) return
-    // Guarda el audio como data URL en IndexedDB (config) para que persista local.
-    const reader = new FileReader()
-    reader.onload = async () => {
-      await setConfig(`audio:${med.id}`, reader.result)
-      setAudioUrl(reader.result)
+    // Se guarda como Blob en IndexedDB (eficiente) y persiste local en el dispositivo.
+    const nombre = file.name.replace(/\.[^.]+$/, '')
+    const id = await addAudio(med.id, nombre, file)
+    if (activoId == null) {
+      await setConfig(`audioActivo:${med.id}`, id)
     }
-    reader.readAsDataURL(file)
+    e.target.value = ''
+    await cargarAudios()
   }
+
+  async function usarAudio(id) {
+    await setConfig(`audioActivo:${med.id}`, id)
+    setActivoId(id)
+  }
+  async function renombrarAudio(id, actual) {
+    const nombre = prompt('Nombre del audio:', actual)
+    if (nombre && nombre.trim()) {
+      await renameAudio(id, nombre.trim())
+      await cargarAudios()
+    }
+  }
+  async function borrarAudio(id) {
+    if (!confirm('¿Borrar este audio? No se puede deshacer.')) return
+    await deleteAudio(id)
+    if (activoId === id) await setConfig(`audioActivo:${med.id}`, null)
+    await cargarAudios()
+  }
+
+  const audioActivo = audios.find((a) => a.id === activoId) || audios[0] || null
 
   return (
     <div className="space-y-5">
@@ -330,11 +377,45 @@ function Reproductor({ med, onVolver }) {
       <p className="text-jade/85">{med.descripcion}</p>
       {med.nota && <Aviso>{med.nota}</Aviso>}
 
-      {/* Player de audio humano (si hay archivo subido o incluido) */}
-      {audioUrl && (
-        <div className="tarjeta p-4">
-          <p className="text-sm font-semibold text-pino mb-2">Tu audio grabado</p>
-          <audio ref={audioRef} controls src={audioUrl} className="w-full" />
+      {/* Player de voz humana: usa el audio activo. Soporta varios audios por meditación. */}
+      {audioActivo && (
+        <div className="tarjeta p-4 space-y-3">
+          <p className="text-sm font-semibold text-pino">Tu voz · {audioActivo.nombre}</p>
+          <audio controls src={audioActivo.url} className="w-full" />
+          {audios.length > 1 && (
+            <div className="space-y-1.5">
+              <p className="text-xs text-salvia">Tus audios para esta meditación:</p>
+              {audios.map((a) => (
+                <div key={a.id} className="flex items-center gap-2 text-sm">
+                  <span className="flex-1 truncate text-jade">
+                    {a.id === activoId ? '▶ ' : ''}
+                    {a.nombre}
+                  </span>
+                  {a.id !== activoId && (
+                    <button onClick={() => usarAudio(a.id)} className="text-xs text-pino font-bold">
+                      usar
+                    </button>
+                  )}
+                  <button onClick={() => renombrarAudio(a.id, a.nombre)} className="text-xs text-jade">
+                    renombrar
+                  </button>
+                  <button onClick={() => borrarAudio(a.id)} className="text-xs text-pino/70">
+                    borrar
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          {audios.length === 1 && (
+            <div className="flex gap-3 text-xs">
+              <button onClick={() => renombrarAudio(audioActivo.id, audioActivo.nombre)} className="text-jade">
+                renombrar
+              </button>
+              <button onClick={() => borrarAudio(audioActivo.id)} className="text-pino/70">
+                borrar
+              </button>
+            </div>
+          )}
         </div>
       )}
 
@@ -382,19 +463,23 @@ function Reproductor({ med, onVolver }) {
       </div>
 
       {/* Subir audio propio (voz humana es-MX) */}
-      <div className="tarjeta p-5">
-        <p className="text-sm font-semibold text-pino mb-1">Sube tu propia voz</p>
-        <p className="text-xs text-salvia mb-3">
-          Graba este guion con tu voz (formato mp3, m4a o wav) y súbelo aquí. Se guarda solo en este
-          dispositivo y reemplaza a la voz sintética para esta meditación.
-        </p>
-        <input
-          type="file"
-          accept="audio/*"
-          onChange={subirAudio}
-          className="block w-full text-sm text-jade file:mr-3 file:rounded-full file:border-0 file:bg-pino file:text-arena file:px-4 file:py-2 file:font-bold"
-        />
-      </div>
+      {!esGenerada && (
+        <div className="tarjeta p-5">
+          <p className="text-sm font-semibold text-pino mb-1">
+            {audios.length ? 'Agregar otra grabación' : 'Sube tu propia voz'}
+          </p>
+          <p className="text-xs text-salvia mb-3">
+            Graba este guion con tu voz (mp3, m4a o wav) y súbelo. Se guarda solo en este dispositivo.
+            Puedes tener varias versiones y elegir cuál usar.
+          </p>
+          <input
+            type="file"
+            accept="audio/*"
+            onChange={subirAudio}
+            className="block w-full text-sm text-jade file:mr-3 file:rounded-full file:border-0 file:bg-pino file:text-arena file:px-4 file:py-2 file:font-bold"
+          />
+        </div>
+      )}
     </div>
   )
 }

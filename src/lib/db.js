@@ -10,7 +10,7 @@ import { openDB } from 'idb'
 //  - config        : claves de configuración (API key, modelo, voz, etc.)
 
 const DB_NAME = 'ruta-calma-pppd'
-const DB_VERSION = 1
+const DB_VERSION = 2
 
 let dbPromise
 
@@ -38,6 +38,11 @@ function getDB() {
         }
         if (!db.objectStoreNames.contains('config')) {
           db.createObjectStore('config')
+        }
+        // v2: audios de voz humana (Blob) por meditación, con varios por meditación.
+        if (!db.objectStoreNames.contains('audios')) {
+          const s = db.createObjectStore('audios', { keyPath: 'id', autoIncrement: true })
+          s.createIndex('medId', 'medId')
         }
       },
     })
@@ -97,6 +102,25 @@ export async function clearHallazgos() {
   return (await getDB()).clear('hallazgos')
 }
 
+// --- Audios de voz humana (Blob) por meditación ---
+export async function addAudio(medId, nombre, blob) {
+  return (await getDB()).add('audios', { medId, nombre, blob, ts: new Date().toISOString() })
+}
+export async function getAudios(medId) {
+  return (await getDB()).getAllFromIndex('audios', 'medId', medId)
+}
+export async function renameAudio(id, nombre) {
+  const db = await getDB()
+  const a = await db.get('audios', id)
+  if (a) {
+    a.nombre = nombre
+    await db.put('audios', a)
+  }
+}
+export async function deleteAudio(id) {
+  return (await getDB()).delete('audios', id)
+}
+
 // --- Exportar / borrar todo (privacidad) ---
 export async function exportarTodo() {
   const db = await getDB()
@@ -117,5 +141,6 @@ export async function borrarTodo() {
     db.clear('autoreportes'),
     db.clear('rutas'),
     db.clear('hallazgos'),
+    db.clear('audios'),
   ])
 }
