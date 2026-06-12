@@ -79,6 +79,8 @@ src/
   modules/
     Onboarding.jsx  RutaDiaria.jsx  Meditaciones.jsx  Explorador.jsx
     Seguimiento.jsx  PanelEvidencia.jsx  Ajustes.jsx  ModalCrisis.jsx
+    ExposicionVisual.jsx   Práctica VRT graduada (4 niveles, patrones optocinéticos,
+                           tolerancia antes/después, progresión). Se abre desde la pestaña Hoy.
 ```
 
 ## Cómo fluye lo importante

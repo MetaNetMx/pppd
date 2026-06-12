@@ -106,8 +106,11 @@ paleta natural. Voz: directa, sin prisa, sin autoayuda masiva.
 
 - **Hecho:** 6 módulos, evidencia, meditación a la medida, escenas de naturaleza, TTS configurable,
   proxy Vercel (chat + TTS), racha, informe PDF, recordatorio local, error boundary.
+- **Hecho (cont.):** modo guiado offline del Explorador (funciona sin IA); UI simplificada
+  (config técnica bajo "Avanzado"); **práctica de exposición visual** con 4 niveles, patrones
+  optocinéticos (puntos/barras/tablero/ondas), valoración de tolerancia antes/después y progresión.
 - **Siguiente:** Web Push para recordatorios con app cerrada; sincronización cifrada opcional;
-  validación del NPQ-es; más niveles/patrones de exposición visual; biblioteca de audios humanos.
+  validación del NPQ-es; biblioteca de audios humanos.
 
 ## 13. Riesgos y mitigaciones
 

@@ -223,6 +223,11 @@ function Diario() {
             {d.tipo === 'ruta' && !d.nota && (
               <p className="text-jade/70 text-sm mt-1 italic">Completaste tu ruta (nivel {d.nivel}).</p>
             )}
+            {d.tipo === 'exposicion' && (
+              <p className="text-jade/70 text-sm mt-1 italic">
+                Exposición visual nivel {d.nivel} ({d.patron}): malestar {d.antes} → {d.despues}.
+              </p>
+            )}
           </div>
         ))}
       </div>

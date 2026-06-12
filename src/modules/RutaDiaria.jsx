@@ -6,6 +6,7 @@ import { hoyISO } from '../lib/util'
 import EtiquetaEvidencia from '../components/EtiquetaEvidencia'
 import PatronVisual from '../components/PatronVisual'
 import NaturalezaScene from '../components/NaturalezaScene'
+import ExposicionVisual from './ExposicionVisual'
 
 const ESTADOS = [
   { id: 'malo', emoji: '🌧️', texto: 'Día difícil' },
@@ -15,6 +16,7 @@ const ESTADOS = [
 
 export default function RutaDiaria({ perfil }) {
   const [rutas, setRutas] = useState([])
+  const [vista, setVista] = useState('ruta') // ruta | exposicion
   const [fase, setFase] = useState('intro') // intro | check | sesion | fin
   const [estado, setEstado] = useState(null)
   const [nivel, setNivel] = useState(1)
@@ -30,6 +32,8 @@ export default function RutaDiaria({ perfil }) {
   }, [rutas])
 
   const hechoHoy = rutas.some((r) => r.fecha === hoyISO())
+
+  if (vista === 'exposicion') return <ExposicionVisual onVolver={() => setVista('ruta')} />
 
   function comenzar() {
     setFase('check')
@@ -112,6 +116,13 @@ export default function RutaDiaria({ perfil }) {
         <button onClick={comenzar} className="boton-primario w-full">
           {hechoHoy ? 'Repetir ruta' : 'Empezar mi ruta'}
         </button>
+
+        <button onClick={() => setVista('exposicion')} className="boton-suave w-full">
+          Práctica de exposición visual
+        </button>
+        <p className="text-xs text-salvia text-center -mt-2">
+          Reentrenamiento vestibular graduado, aparte de la ruta. Sube de nivel a tu ritmo.
+        </p>
       </div>
     )
   }
